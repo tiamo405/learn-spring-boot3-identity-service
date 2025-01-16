@@ -46,6 +46,8 @@ public class UserService {
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
         userMapper.updateUser(user, request);
         return userMapper.toUserResponse(userRepository.save(user));
     }
