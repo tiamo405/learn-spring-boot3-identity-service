@@ -51,35 +51,38 @@ public class UserController {
 //        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 //        apiResponse.setResult(userService.getUser(userId));
 //        return apiResponse;
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserResponse user = userService.getUser(userId);
-        if (!authentication.getName().equals(user.getUsername())) {
-            throw new RuntimeException("Unauthorized");
-        }
         return ApiResponse.<UserResponse>builder()
-                .result(user)
+                .result(userService.getUser(userId))
+                .build();
+    }
+
+    @GetMapping("/myInfo")
+    ApiResponse<UserResponse> getMyInfo() {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyinfo())
                 .build();
     }
 
     @PutMapping("/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
-//        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-//        apiResponse.setResult(userService.updateUser(userId, request));
-//        return apiResponse;
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.updateUser(userId, request))
-                .build();
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.updateUser(userId, request));
+        return apiResponse;
+
+//        return ApiResponse.<UserResponse>builder()
+//                .result(userService.updateUser(userId, request))
+//                .build();
     }
 
     @DeleteMapping("/{userId}")
     ApiResponse<String> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
-//        ApiResponse<String> apiResponse = new ApiResponse<>();
-//        apiResponse.setResult("User deleted successfully");
-//        return apiResponse;
-        return ApiResponse.<String>builder()
-                .result("User deleted successfully")
-                .build();
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setResult("User deleted successfully");
+        return apiResponse;
+//        return ApiResponse.<String>builder()
+//                .result("User deleted successfully")
+//                .build();
     }
 
 }
