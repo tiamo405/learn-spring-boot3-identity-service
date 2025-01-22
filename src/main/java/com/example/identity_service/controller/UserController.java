@@ -42,6 +42,7 @@ public class UserController {
 //        ApiResponse<List<User>> apiResponse = new ApiResponse<>();
 //        apiResponse.setResult(userService.getUsers());
         return ApiResponse.<List<User>>builder()
+                .code(1000)
                 .result(userService.getUsers())
                 .build();
     }
