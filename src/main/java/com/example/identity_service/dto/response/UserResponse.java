@@ -21,5 +21,5 @@ public class UserResponse {
     LocalDate dob;
 
     @ManyToMany
-    Set<Role> roles;
+    Set<RoleResponse> roles;
 }

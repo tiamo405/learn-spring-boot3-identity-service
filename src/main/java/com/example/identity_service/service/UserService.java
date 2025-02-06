@@ -8,6 +8,7 @@ import com.example.identity_service.enums.Role;
 import com.example.identity_service.exception.AppException;
 import com.example.identity_service.exception.ErrorCode;
 import com.example.identity_service.mapper.UserMapper;
+import com.example.identity_service.repository.RoleRepository;
 import com.example.identity_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +34,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
     public User createUser(UserCreationRequest request) {
 
 
@@ -64,23 +67,26 @@ public class UserService {
     }
 
 //    @PostAuthorize("returnObject.username == authentication.name")
-    @PreAuthorize("#userId == authentication.principal.userId")
+    @PreAuthorize("#userId == authentication.principal.claims['userId']")
     public UserResponse getUser(String userId) {
         log.info("In method getUser by id");
         return userMapper.toUserResponse(userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
     
-    @PreAuthorize("#userId == authentication.principal.userId")
+    @PreAuthorize("#userId == authentication.principal.claims['userId']")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         userMapper.updateUser(user, request);
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.userId")
-//    @PostAuthorize("returnObject.username == authentication.name")
+    @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.claims['userId']")
     public void deleteUser(String userId) {
         log.info("In method deleteUser by id");
         userRepository.deleteById(userId);
