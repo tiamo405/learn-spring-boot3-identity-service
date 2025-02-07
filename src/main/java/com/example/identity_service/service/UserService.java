@@ -35,8 +35,7 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
-    public User createUser(UserCreationRequest request) {
-
+    public UserResponse createUser(UserCreationRequest request) {
 
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTS);
@@ -45,12 +44,14 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-//        HashSet<String> roles = new HashSet<>();
-//        roles.add(Role.USER.name());
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
 
 //        user.setRoles(roles);
-        return userRepository.save(user);
+//        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
+
 
     public UserResponse getMyinfo(){
         var context = SecurityContextHolder.getContext();
@@ -61,9 +62,9 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getUsers() {
+    public List<UserResponse> getUsers() {
         log.info("In method getUsers");
-        return userRepository.findAll();
+        return userMapper.toUserResponseList(userRepository.findAll());
     }
 
 //    @PostAuthorize("returnObject.username == authentication.name")
