@@ -75,7 +75,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
     
-    @PreAuthorize("#userId == authentication.principal.claims['userId']")
+    @PreAuthorize("#userId == authentication.principal.claims['userId'] or hasRole('ADMIN')")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         request.setPassword(passwordEncoder.encode(request.getPassword()));
