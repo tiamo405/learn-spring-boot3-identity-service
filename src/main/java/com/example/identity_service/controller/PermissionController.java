@@ -1,16 +1,17 @@
 package com.example.identity_service.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.example.identity_service.dto.request.ApiResponse;
 import com.example.identity_service.dto.request.PermissionRequest;
 import com.example.identity_service.dto.response.PermissionResponse;
 import com.example.identity_service.service.PermissionService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 
 @Slf4j
 @RestController
@@ -29,20 +30,16 @@ public class PermissionController {
     }
 
     @GetMapping
-    ApiResponse<List<PermissionResponse>> getAll(){
+    ApiResponse<List<PermissionResponse>> getAll() {
         return ApiResponse.<List<PermissionResponse>>builder()
                 .result(permissionService.getAll())
                 .code(1000)
                 .build();
     }
 
-
     @DeleteMapping("/{permissionName}")
-    ApiResponse<Void> deletePermission(@PathVariable String permissionName){
+    ApiResponse<Void> deletePermission(@PathVariable String permissionName) {
         permissionService.deletePermission(permissionName);
-        return ApiResponse.<Void>builder()
-                .code(1000)
-                .build();
-
+        return ApiResponse.<Void>builder().code(1000).build();
     }
 }

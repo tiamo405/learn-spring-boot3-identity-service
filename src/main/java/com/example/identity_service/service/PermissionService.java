@@ -1,17 +1,19 @@
 package com.example.identity_service.service;
 
+import java.util.List;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.example.identity_service.dto.request.PermissionRequest;
 import com.example.identity_service.dto.response.PermissionResponse;
 import com.example.identity_service.entity.Permission;
 import com.example.identity_service.mapper.PermissionMapper;
 import com.example.identity_service.repository.PermissionRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -32,6 +34,7 @@ public class PermissionService {
         var permissions = permissionRepository.findAll();
         return permissions.stream().map(permissionMapper::toPermissionResponse).toList();
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     public void deletePermission(String name) {
         permissionRepository.deleteById(name);

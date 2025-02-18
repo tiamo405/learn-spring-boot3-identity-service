@@ -1,6 +1,5 @@
 package com.example.identity_service.configuration;
 
-
 import java.text.ParseException;
 import java.util.Objects;
 import javax.crypto.spec.SecretKeySpec;
