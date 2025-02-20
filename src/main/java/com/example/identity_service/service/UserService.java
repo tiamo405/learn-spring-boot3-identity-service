@@ -3,6 +3,7 @@ package com.example.identity_service.service;
 import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,9 +37,9 @@ public class UserService {
 
     public UserResponse createUser(UserCreationRequest request) {
 
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new AppException(ErrorCode.USER_EXISTS);
-        }
+//        if (userRepository.existsByUsername(request.getUsername())) {
+//            throw new AppException(ErrorCode.USER_EXISTS);
+//        }
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -48,6 +49,12 @@ public class UserService {
 
         //        user.setRoles(roles);
         //        return userRepository.save(user);
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(ErrorCode.USER_EXISTS);
+
+        }
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
