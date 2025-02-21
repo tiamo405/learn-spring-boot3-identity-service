@@ -2,7 +2,9 @@ package com.example.identity_service.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.example.identity_service.constant.PredefinedRole;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,11 +46,10 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+        var roles = roleRepository.findAllById(Set.of("USER"));
 
-        //        user.setRoles(roles);
-        //        return userRepository.save(user);
+        user.setRoles(new HashSet<>(roles));
+
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException e) {

@@ -2,6 +2,7 @@ package com.example.identity_service.configuration;
 
 import java.util.HashSet;
 
+import com.example.identity_service.constant.PredefinedRole;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -24,20 +25,25 @@ import lombok.extern.slf4j.Slf4j;
 public class ApplicationInitConfig {
 
     private PasswordEncoder passwordEncoder;
-    RoleRepository roleRepository;
+
 
     @Bean
     @ConditionalOnProperty(
             prefix = "spring",
             value = "datasource.driverClassName",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(UserRepository userRepository) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
 
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
+                // create role user
+                roleRepository.save(Role.builder()
+                        .name(PredefinedRole.USER_ROLE)
+                        .description("User role")
+                        .build());
 
                 Role adminRole = roleRepository.save(Role.builder()
-                        .name("ADMIN")
+                        .name(PredefinedRole.ADMIN_ROLE)
                         .description("admin role")
                         //                            .permissions(new HashSet<>(permissions))
                         .build());
@@ -52,6 +58,8 @@ public class ApplicationInitConfig {
                         .build();
                 userRepository.save(user);
                 log.warn("default admin user created password is admin, please change it");
+
+
             }
         };
     }
