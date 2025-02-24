@@ -4,18 +4,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.example.identity_service.constant.PredefinedRole;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.identity_service.constant.PredefinedRole;
 import com.example.identity_service.dto.request.UserCreationRequest;
 import com.example.identity_service.dto.request.UserUpdateRequest;
 import com.example.identity_service.dto.response.UserResponse;
 import com.example.identity_service.entity.User;
-import com.example.identity_service.enums.Role;
 import com.example.identity_service.exception.AppException;
 import com.example.identity_service.exception.ErrorCode;
 import com.example.identity_service.mapper.UserMapper;
@@ -39,14 +38,14 @@ public class UserService {
 
     public UserResponse createUser(UserCreationRequest request) {
 
-//        if (userRepository.existsByUsername(request.getUsername())) {
-//            throw new AppException(ErrorCode.USER_EXISTS);
-//        }
+        //        if (userRepository.existsByUsername(request.getUsername())) {
+        //            throw new AppException(ErrorCode.USER_EXISTS);
+        //        }
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        var roles = roleRepository.findAllById(Set.of("USER"));
+        var roles = roleRepository.findAllById(Set.of(PredefinedRole.USER_ROLE));
 
         user.setRoles(new HashSet<>(roles));
 
@@ -54,7 +53,6 @@ public class UserService {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             throw new AppException(ErrorCode.USER_EXISTS);
-
         }
         return userMapper.toUserResponse(userRepository.save(user));
     }

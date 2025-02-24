@@ -2,13 +2,13 @@ package com.example.identity_service.configuration;
 
 import java.util.HashSet;
 
-import com.example.identity_service.constant.PredefinedRole;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.example.identity_service.constant.PredefinedRole;
 import com.example.identity_service.entity.Role;
 import com.example.identity_service.entity.User;
 import com.example.identity_service.repository.RoleRepository;
@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ApplicationInitConfig {
 
     private PasswordEncoder passwordEncoder;
-
 
     @Bean
     @ConditionalOnProperty(
@@ -58,8 +57,6 @@ public class ApplicationInitConfig {
                         .build();
                 userRepository.save(user);
                 log.warn("default admin user created password is admin, please change it");
-
-
             }
         };
     }
